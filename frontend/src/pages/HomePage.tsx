@@ -179,15 +179,15 @@ const HomePage: React.FC = () => {
   };
 
   const handleRecipeClick = async (recipe: RecipeCardData) => {
-    setIsLoadingDetails(true);
-    setError(null);
     try {
-      const details = await getRecipeInformation(recipe.id);
-      setSelectedRecipe(details);
+      setIsLoadingDetails(true);
+      setError(null);
+      const detailedRecipeData = await getRecipeInformation(recipe.id);
+      setSelectedRecipe(detailedRecipeData);
       setIsModalOpen(true);
     } catch (err) {
-      console.error('Error loading recipe details:', err);
       setError('Failed to load recipe details. Please try again.');
+      console.error('Error loading recipe details:', err);
     } finally {
       setIsLoadingDetails(false);
     }
