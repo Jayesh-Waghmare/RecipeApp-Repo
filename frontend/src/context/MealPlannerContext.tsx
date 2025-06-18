@@ -10,6 +10,7 @@ export interface Recipe {
   servings: number;
   cuisines: string[];
   dishTypes: string[];
+  diets: string[];
 }
 
 export interface MealPlan {
