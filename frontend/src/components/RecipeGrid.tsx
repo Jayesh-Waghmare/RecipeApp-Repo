@@ -1,6 +1,7 @@
 import React from 'react';
 import RecipeCard from './RecipeCard';
 import { Recipe } from '../context/MealPlannerContext';
+import { RecipeCardData } from '../types/recipe';
 
 interface RecipeGridProps {
   recipes: Recipe[];
@@ -42,14 +43,20 @@ const RecipeGrid: React.FC<RecipeGridProps> = ({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {recipes.map((recipe) => (
-        <RecipeCard
-          key={recipe.id}
-          recipe={recipe}
-          onClick={() => onSelectRecipe(recipe)}
-          onFavoriteClick={() => onFavoriteClick(recipe)}
-        />
-      ))}
+      {recipes.map((recipe) => {
+        const recipeCardData: RecipeCardData = {
+          ...recipe,
+          diets: recipe.diets || []
+        };
+        return (
+          <RecipeCard
+            key={recipe.id}
+            recipe={recipeCardData}
+            onClick={() => onSelectRecipe(recipe)}
+            onFavoriteClick={() => onFavoriteClick(recipe)}
+          />
+        );
+      })}
     </div>
   );
 };
