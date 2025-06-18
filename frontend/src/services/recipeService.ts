@@ -81,7 +81,7 @@ export const getRandomRecipes = async (): Promise<RecipeCardData[]> => {
 
 export const getRecipeInformation = async (id: number): Promise<Recipe> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/${id}/information`, {
+    const response = await axios.get(`${API_BASE_URL}/recipes/information/${id}`, {
       params: {
         addRecipeInformation: true,
         fillIngredients: true
