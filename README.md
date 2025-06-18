@@ -28,36 +28,6 @@ A full-stack recipe application built with React, Node.js, and the Spoonacular A
 - CORS for cross-origin requests
 - Environment variable management
 
-## Project Structure
-
-### Frontend
-frontend/
-├── src/
-│ ├── components/
-│ │ ├── FiltersPanel.tsx
-│ │ ├── Header.tsx
-│ │ ├── IngredientSearch.tsx
-│ │ ├── Navbar.tsx
-│ │ ├── RecipeCard.tsx
-│ │ ├── RecipeDetailModal.tsx
-│ │ ├── RecipeGrid.tsx
-│ │ ├── SearchBar.tsx
-│ │ └── SearchInput.tsx
-│ ├── pages/
-│ │ ├── AnalyticsPage.tsx
-│ │ ├── FavoritesPage.tsx
-│ │ ├── HomePage.tsx
-│ │ └── MealPlannerPage.tsx
-│ ├── services/
-│ │ └── recipeService.ts
-│ ├── context/
-│ ├── types/
-│ └── App.tsx
-backend/
-├── server.js
-├── package.json
-└── vercel.json
-
 ## API Endpoints
 
 ### Backend Routes
