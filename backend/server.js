@@ -162,7 +162,6 @@ app.get('/api/recipes/random', async (req, res) => {
   }
 });
 
-// Get recipe by ID
 app.get('/api/recipes/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -172,6 +171,8 @@ app.get('/api/recipes/:id', async (req, res) => {
         params: {
           apiKey: API_KEY,
           addRecipeNutrition: true,
+          addRecipeInformation: true,
+          fillIngredients: true
         },
         timeout: 5000, // 5 second timeout
       }

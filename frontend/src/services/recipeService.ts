@@ -48,16 +48,6 @@ export const searchRecipes = async (query: string, filters?: FilterOptions): Pro
   }
 };
 
-export const getRecipeDetails = async (id: number): Promise<Recipe> => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/recipes/information/${id}`);
-    return response.data;
-  } catch (error: any) {
-    console.error('Error fetching recipe details:', error.response?.data || error.message);
-    throw new Error('Failed to fetch recipe details');
-  }
-};
-
 export const getRandomRecipes = async (): Promise<RecipeCardData[]> => {
   try {
     const response = await axios.get(`${API_BASE_URL}/recipes/random`, {
@@ -81,12 +71,7 @@ export const getRandomRecipes = async (): Promise<RecipeCardData[]> => {
 
 export const getRecipeInformation = async (id: number): Promise<Recipe> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/recipes/information/${id}`, {
-      params: {
-        addRecipeInformation: true,
-        fillIngredients: true
-      }
-    });
+    const response = await axios.get(`${API_BASE_URL}/recipes/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching recipe details:', error);
