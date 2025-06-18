@@ -1,10 +1,10 @@
 import React from 'react';
-import { Recipe } from '../context/MealPlannerContext';
+import { RecipeCardData } from '../types/recipe';
 
 interface RecipeCardProps {
-  recipe: Recipe;
-  onClick?: () => void;
-  onFavoriteClick?: () => void;
+  recipe: RecipeCardData;
+  onClick: (recipe: RecipeCardData) => void;
+  onFavoriteClick?: (recipe: RecipeCardData) => void;
   isFavorite?: boolean;
 }
 
@@ -14,8 +14,22 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onFavoriteClick,
   isFavorite,
 }) => {
+  const handleClick = () => {
+    onClick(recipe);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onFavoriteClick) {
+      onFavoriteClick(recipe);
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105" onClick={onClick}>
+    <div 
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105" 
+      onClick={handleClick}
+    >
       <div className="relative">
         <img
           src={recipe.image}
@@ -24,7 +38,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         />
         {onFavoriteClick && (
           <button
-            onClick={e => { e.stopPropagation(); onFavoriteClick(); }}
+            onClick={handleFavoriteClick}
             className="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-80 hover:bg-opacity-100 transition-colors duration-300"
           >
             <svg

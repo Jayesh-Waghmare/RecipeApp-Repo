@@ -184,6 +184,7 @@ const HomePage: React.FC = () => {
     try {
       const details = await getRecipeInformation(recipe.id);
       setSelectedRecipe(details);
+      setIsModalOpen(true);
     } catch (err) {
       console.error('Error loading recipe details:', err);
       setError('Failed to load recipe details. Please try again.');
@@ -197,9 +198,8 @@ const HomePage: React.FC = () => {
     setSelectedRecipe(null);
   };
 
-  const handleFavoriteClick = (recipe: any) => {
-    const isFavorite = favorites.some((fav) => fav.id === recipe.id);
-    if (isFavorite) {
+  const handleFavoriteClick = (recipe: RecipeCardData) => {
+    if (favorites.some(fav => fav.id === recipe.id)) {
       removeFromFavorites(recipe.id);
     } else {
       addToFavorites(recipe);
@@ -212,150 +212,48 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Left Sidebar */}
-          <div className="w-full md:w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Searches</h2>
-              {recentSearches.length > 0 ? (
-                <div className="space-y-2">
-                  {recentSearches.map((search, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer"
-                      onClick={() => handleSearch(search.split(','))}
-                    >
-                      <span className="text-sm text-gray-600">{search}</span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFromRecentSearches(index);
-                        }}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={clearRecentSearches}
-                    className="w-full mt-2 text-sm text-red-600 hover:text-red-800"
-                  >
-                    Clear All
-                  </button>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">No recent searches</p>
-              )}
-            </div>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+      <div className="container mx-auto px-4 py-8">
+        <SearchBar onSearch={handleSearch} />
+        <FiltersPanel 
+          currentFilters={filters}
+          onFilterChange={handleFilterChange} 
+        />
+        
+        {error && (
+          <div className="text-red-500 text-center my-4">
+            {error}
           </div>
+        )}
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <SearchBar onSearch={handleSearch} />
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <FiltersPanel
-                currentFilters={filters}
-                onFilterChange={handleFilterChange}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+            {recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                onClick={handleRecipeClick}
+                onFavoriteClick={handleFavoriteClick}
+                isFavorite={favorites.some(fav => fav.id === recipe.id)}
               />
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              </div>
-            ) : error ? (
-              <div className="text-center text-red-600 bg-red-50 p-4 rounded-lg">
-                {error}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={recipe}
-                    onClick={() => handleRecipeClick(recipe)}
-                    isFavorite={favorites.some(fav => fav.id === recipe.id)}
-                    onFavoriteClick={() => {
-                      if (favorites.some(fav => fav.id === recipe.id)) {
-                        removeFromFavorites(recipe.id);
-                      } else {
-                        addToFavorites(recipe);
-                      }
-                    }}
-                  />
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-        </div>
+        )}
+
+        {isModalOpen && selectedRecipe && (
+          <RecipeDetailModal
+            recipe={selectedRecipe}
+            onClose={handleCloseModal}
+            isLoading={isLoadingDetails}
+            isFavorite={favorites.some(fav => fav.id === selectedRecipe.id)}
+            onFavoriteClick={() => handleFavoriteClick(selectedRecipe)}
+          />
+        )}
       </div>
-
-      {selectedRecipe && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedRecipe.title}</h2>
-                <button
-                  onClick={() => setSelectedRecipe(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              {isLoadingDetails ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <img
-                    src={selectedRecipe.image}
-                    alt={selectedRecipe.title}
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">Ready in</h3>
-                      <p className="text-gray-600">{selectedRecipe.readyInMinutes} minutes</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">Servings</h3>
-                      <p className="text-gray-600">{selectedRecipe.servings}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Ingredients</h3>
-                    <ul className="list-disc list-inside space-y-1">
-                      {selectedRecipe.extendedIngredients?.map((ingredient, index) => (
-                        <li key={index} className="text-gray-600">
-                          {ingredient.original}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Instructions</h3>
-                    <div className="prose max-w-none">
-                      {selectedRecipe.instructions}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
